@@ -10,7 +10,7 @@ function connectToServer() {
     }
     
     try {
-        const ws = new WebSocket(`ws://worldbox.inmny.cn:25565`);
+        const ws = new WebSocket(`wss://worldbox.inmny.cn`);
         
         // 存储WebSocket实例到全局对象
         window.wsManager = {
