@@ -10,7 +10,7 @@ function connectToServer() {
     }
     
     try {
-        const ws = new WebSocket(`ws://${ip}`);
+        const ws = new WebSocket(`wss://${ip}`);
         
         // 存储WebSocket实例到全局对象
         window.wsManager = {
