@@ -5,22 +5,26 @@
 function connectToServer() {
     const ip = document.getElementById('server-ip').value.trim();
     if (!ip) {
-        alert('请输入服务器IP地址和端口');
+        alert('请输入服务器Key');
         return;
     }
     
     try {
-        const ws = new WebSocket(`wss://${ip}`);
+        const ws = new WebSocket(`ws://worldbox.inmny.cn:25565`);
         
         // 存储WebSocket实例到全局对象
         window.wsManager = {
             ws: ws,
             connectionStatusEl: document.getElementById('connection-status')
         };
-        
         ws.onopen = () => {
             console.log('已连接到服务器');
             updateConnectionStatus(true);
+            ws.send(JSON.stringify({
+                type: 'client_register',
+                clientId: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+                serverId: ip
+            }));
         };
         
         ws.onmessage = (event) => {
@@ -101,7 +105,10 @@ function sendMessage(message) {
     }
     
     try {
-        window.wsManager.ws.send(message);
+        window.wsManager.ws.send(JSON.stringify({
+            type: 'message',
+            content: message
+        }));
         return true;
     } catch (error) {
         console.error('发送消息失败:', error);
