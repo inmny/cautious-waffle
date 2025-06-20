@@ -1,0 +1,356 @@
+/* 基本重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 主体样式 */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 头部样式 */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2c3e50;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 20px;
+}
+
+#connection-status {
+    padding: 5px 15px;
+    border-radius: 20px;
+    background-color: #e74c3c;
+}
+
+/* 主要内容区域 */
+main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.game-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.server-connect {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+input[type="text"],
+input[type="number"] {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+#connect-btn {
+    background-color: #3498db;
+    color: white;
+}
+
+#ally-btn {
+    background-color: #2ecc71;
+    color: white;
+    margin-right: 10px;
+}
+
+#war-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+#submit-tax {
+    background-color: #f39c12;
+    color: white;
+    margin-left: 10px;
+}
+
+/* 地图区域布局 */
+.map-area {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 20px;
+}
+
+.map-info-section {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+}
+
+.map-display-section {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+}
+
+#map-container {
+    position: relative;
+    height: 600px;
+    background-color: #ecf0f1;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#map-mask {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: grab;
+}
+
+#game-map {
+    position: absolute;
+    left: 0;
+    top: 0;
+    will-change: transform;
+}
+
+/* 操作面板布局 */
+.diplomacy-policy-section {
+    grid-column: 1 / 3;
+    grid-row: 3 / 4;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 左右各占50% */
+    gap: 20px;
+}
+
+.diplomacy-policy-left {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.diplomacy-actions, .internal-policy {
+    margin-bottom: 0;
+}
+
+.action-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+h3 {
+    margin-bottom: 10px;
+}
+
+/* 标签页样式 */
+.tab-navigation {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 15px;
+}
+
+.tab-navigation button {
+    flex: 1;
+    padding: 10px 15px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.tab-navigation button.active {
+    color: #3498db;
+    border-color: #3498db;
+}
+
+.tab-content {
+    height: calc(600px - 120px); /* 调整高度以适应标签导航 */
+    overflow-y: auto;
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+/* 消息面板样式 */
+.message-panel {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 20px;
+    height: 550px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message-panel h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.messages-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.message-item {
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border-left: 4px solid #3498db;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.message-item.system {
+    border-color: #f39c12;
+}
+
+.message-item.alert {
+    border-color: #e74c3c;
+}
+
+.message-item.success {
+    border-color: #2ecc71;
+}
+
+.message-item time {
+    color: #888;
+    font-size: 0.9em;
+    margin-right: 10px;
+}
+
+/* 带选项的消息样式 */
+.message-content {
+    margin-bottom: 8px;
+}
+
+.message-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.option-btn {
+    padding: 6px 12px;
+    font-size: 0.9em;
+    border: none;
+    border-radius: 4px;
+    background-color: #ecf0f1;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option-btn:hover {
+    background-color: #dce1e3;
+}
+/* 多选下拉框样式 */
+select[multiple] {
+    height: auto;
+    min-height: 100px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-y: auto;
+}
+
+/* 移动端适配 */
+@media (max-width: 992px) {
+    .map-area {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .map-info-section {
+        grid-column: 1 / 2;
+        grid-row: 2 / 3;
+    }
+    
+    .map-display-section {
+        grid-column: 1 / 2;
+        grid-row: 1 / 2;
+    }
+    
+    .diplomacy-policy-section {
+        grid-column: 1 / 2;
+    }
+    
+    canvas {
+        width: 100%;
+        height: auto;
+    }
+    
+    #map-container {
+        height: auto;
+        min-height: 400px;
+    }
+    
+    .server-connect {
+        flex-direction: column;
+    }
+    
+    button {
+        width: 100%;
+    }
+
+    /* 移动端标签页样式 */
+    .tab-navigation {
+        flex-wrap: wrap;
+    }
+    
+    .tab-navigation button {
+        flex: 1 0 50%;
+        text-align: center;
+        padding: 12px;
+    }
+    
+    .tab-pane {
+        display: none;
+    }
+    
+    .tab-pane.active {
+        display: block;
+    }
+    select[multiple] {
+        height: auto;
+        min-height: 100px;
+    }
+}

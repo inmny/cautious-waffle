@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>世界盒子 - 政策模拟游戏</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>世界盒子</h1>
+            <div class="server-connect">
+                <input type="text" id="server-ip" placeholder="IP地址:端口">
+                <button id="connect-btn">连接</button>
+            </div>
+            <div id="connection-status">未连接</div>
+        </header>
+
+        <main>
+            <div class="map-area">
+                <section class="game-section map-info-section">
+                    <h2>势力信息</h2>
+                    
+                    <!-- 新增标签导航 -->
+                    <div class="tab-navigation">
+                        <button class="active" data-tab="nation">国家整体</button>
+                        <button data-tab="city">城市详情</button>
+                        <button data-tab="ruler">国王信息</button>
+                        <button data-tab="diplomacy">外交关系</button>
+                    </div>
+                    
+                    <!-- 新增标签内容容器 -->
+                    <div class="tab-content">
+                        <!-- 国家整体信息 -->
+                        <div id="tab-nation" class="tab-pane active">
+                            <div id="faction-info"></div>
+                        </div>
+                        
+                        <!-- 城市详情 -->
+                        <div id="tab-city" class="tab-pane">
+                            <div id="city-info">
+                                <p>请选择一个城市查看详情</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 国王信息 -->
+                        <div id="tab-ruler" class="tab-pane">
+                            <div id="ruler-info">
+                                <p>暂无国王信息</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 外交关系 -->
+                        <div id="tab-diplomacy" class="tab-pane">
+                            <div id="diplomacy-info">
+                                <p>暂无外交信息</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="game-section map-display-section">
+                    <h2>地图显示</h2>
+                    <div id="map-container">
+                        <!-- 新增遮罩层 -->
+                        <div id="map-mask">
+                            <canvas id="game-map"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="game-section diplomacy-policy-section">
+                <!-- 使用div容器包裹左侧内容 -->
+                <div class="diplomacy-policy-left">
+                    <div class="diplomacy-actions">
+                        <h3>外交操作</h3>
+                        <div class="action-group">
+                            <select id="target-faction" multiple>
+                                <option value="">选择势力</option>
+                            </select>
+                            <button id="ally-btn">请求结盟</button>
+                            <button id="war-btn">宣战</button>
+                        </div>
+                    </div>
+
+                    <div class="internal-policy">
+                        <h3>内政管理</h3>
+                        <div class="action-group">
+                            <label for="tax-rate">税率调整:</label>
+                            <input type="number" id="tax-rate" min="0" max="100" step="0.1">
+                            <button id="submit-tax">提交</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 新增的消息面板 -->
+                <div class="message-panel">
+                    <h2>全局消息</h2>
+                    <div class="messages-list" id="global-messages">
+                        <div class="message-item system">
+                            感谢伟大的Inmny
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- 按顺序加载各个JS模块 -->
+    <script src="js/core.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/commands.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
