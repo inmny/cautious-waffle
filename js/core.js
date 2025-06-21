@@ -83,6 +83,11 @@ function handleMessage(data) {
                 window.uiModule.updateRulerInfo(data.ruler);
             }
             break;
+        case 'diplomacy_info':
+            if (window.uiModule && typeof window.uiModule.updateDiplomacyInfo === 'function') {
+                window.uiModule.updateDiplomacyInfo(data.diplomacy);
+            }
+            break;
         case 'faction_list':
             if (window.uiModule && typeof window.uiModule.updateFactionList === 'function') {
                 window.uiModule.updateFactionList(data.factions);

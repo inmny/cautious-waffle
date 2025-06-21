@@ -303,21 +303,12 @@ function showDiplomacyNotification(factionName, relationChange) {
     }
 }
 
-// 将外交关系数值转换为文本
-function getRelationText(relationValue) {
-    if (relationValue >= 90) return '盟友';
-    if (relationValue >= 70) return '友好';
-    if (relationValue >= 50) return '中立';
-    if (relationValue >= 30) return '紧张';
-    return '敌对';
-}
-
 // 更新外交信息显示
 function updateDiplomacyInfo(diplomacy) {
     const diplomacyInfo = document.getElementById('diplomacy-info');
     if (!diplomacyInfo) return;
     
-    if (!diplomacy || Object.keys(diplomacy).length === 0) {
+    if (!diplomacy || diplomacy.length === 0) {
         diplomacyInfo.innerHTML = '<p>暂无外交信息</p>';
         return;
     }
@@ -326,9 +317,8 @@ function updateDiplomacyInfo(diplomacy) {
     let infoHtml = '<h4>外交关系</h4>';
     infoHtml += '<ul>';
     
-    Object.entries(diplomacy).forEach(([factionId, relation]) => {
-        const relationText = getRelationText(relation);
-        infoHtml += `<li>势力 ${factionId}: <span class="relation-${relationText.toLowerCase()}">${relationText}</span></li>`;
+    diplomacy.forEach(item => {
+        infoHtml += `<li>${item.target_faction_name}: <span class="relation-${item.relation}">${item.relation}</span></li>`;
     });
     
     infoHtml += '</ul>';
