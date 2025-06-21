@@ -272,37 +272,6 @@ function addOptionMessage(message, options, timestamp = null) {
     // 返回按钮元素数组
     return Array.from(messageItem.querySelectorAll('.option-btn'));
 }
-
-// 示例：外交关系变化的消息提示
-function showDiplomacyNotification(factionName, relationChange) {
-    let message = '';
-    let type = 'info';
-    
-    switch(relationChange) {
-        case 'ally':
-            message = `与${factionName}成功结盟！`;
-            type = 'success';
-            break;
-        case 'decline_ally':
-            message = `与${factionName}的结盟请求被驳回`;
-            type = 'alert';
-            break;
-        case 'war':
-            message = `${factionName}向您宣战了！`;
-            type = 'alert';
-            break;
-        case 'peace':
-            message = `${factionName}提议与您停战`;
-            type = 'info';
-            break;
-        default:
-            message = `与${factionName}的关系发生变化`;    }
-    
-    if (message) {
-        addGlobalMessage(message, type);
-    }
-}
-
 // 更新外交信息显示
 function updateDiplomacyInfo(diplomacy) {
     const diplomacyInfo = document.getElementById('diplomacy-info');
@@ -354,7 +323,6 @@ function updateFactionList(factions) {
 window.uiModule = {
     addGlobalMessage: addGlobalMessage,
     addOptionMessage: addOptionMessage,
-    showDiplomacyNotification: showDiplomacyNotification,
     updateFactionInfo: updateFactionInfo,
     updateFactionList: updateFactionList,
     updateCityInfo: updateCityInfo,
