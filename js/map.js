@@ -241,10 +241,11 @@ function updateMap(mapData) {
     // 绘制地图数据
     for (let i = 0; i < mapData.zones.length; i++) {
         const zone = mapData.zones[i];
-
+        const x = zone.index % mapData.width;
+        const y = Math.floor(zone.index / mapData.width);
         const color = zone.color;
         mapCtx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`
-        mapCtx.fillRect(zone.x * cellSize + lineWidth, mapCanvas.height - ((zone.y+1) * cellSize + lineWidth), cellSize - lineWidth * 2, cellSize - lineWidth * 2);
+        mapCtx.fillRect(x * cellSize + lineWidth, mapCanvas.height - ((y+1) * cellSize + lineWidth), cellSize - lineWidth * 2, cellSize - lineWidth * 2);
     }
     
     // 恢复状态
