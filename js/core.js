@@ -78,6 +78,11 @@ function handleMessage(data) {
                 window.uiModule.updateFactionInfo(data.faction);
             }
             break;
+        case 'ruler_info':
+            if (window.uiModule && typeof window.uiModule.updateRulerInfo === 'function') {
+                window.uiModule.updateRulerInfo(data.ruler);
+            }
+            break;
         case 'faction_list':
             if (window.uiModule && typeof window.uiModule.updateFactionList === 'function') {
                 window.uiModule.updateFactionList(data.factions);

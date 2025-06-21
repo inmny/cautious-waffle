@@ -175,14 +175,12 @@ function updateRulerInfo(ruler) {
     
     // 构建国王信息HTML
     let infoHtml = `<h3>${ruler.name}</h3>`;
-    infoHtml += `<p>称号: ${ruler.title}</p>`;
     infoHtml += `<p>年龄: ${ruler.age}</p>`;
-    infoHtml += `<p>统治时间: ${ruler.reignDuration}年</p>`;
-    infoHtml += `<p>魅力: ${ruler.charm}</p>`;
-    infoHtml += `<p>智慧: ${ruler.wisdom}</p>`;
-    infoHtml += `<p>军事才能: ${ruler.militarySkill}</p>`;
-    infoHtml += `<p>性格特征: ${ruler.personalityTraits.join(', ')}</p>`;
-    infoHtml += `<p>健康状况: ${ruler.health > 0.8 ? '优秀' : ruler.health > 0.5 ? '良好' : ruler.health > 0.2 ? '一般' : '较差'}</p>`;
+    infoHtml += `<p>声望: ${ruler.renown}</p>`;
+    infoHtml += `<p>智力: ${ruler.intelligence}</p>`;
+    infoHtml += `<p>军事: ${ruler.warfare}</p>`;
+    infoHtml += `<p>内政: ${ruler.stewardship}</p>`;
+    infoHtml += `<p>外交: ${ruler.diplomacy}</p>`;
     
     rulerInfo.innerHTML = infoHtml;
 }
