@@ -325,7 +325,6 @@ button:hover {
     cursor: pointer;
 }
 
-/* 修改后的战争条目样式 */
 .kingdom-item {
     padding: 0.5em;
     margin-bottom: 0.5em;
@@ -341,16 +340,16 @@ button:hover {
     background-color: #f0f0f0;
 }
 
-/* 选中状态样式 */
 .kingdom-item.selected {
     background-color: #dce1e3;
     border-left: 4px solid #3498db;
 }
 
-/* 战争详情容器 */
 .kingdom-details-container {
     flex: 2;
     padding-left: 1em;
+    max-height: 300px; /* 固定最大高度 */
+    overflow-y: auto; /* 内容溢出时显示垂直滚动条 */
 }
 
 /* 战争信息内容 */

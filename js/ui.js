@@ -42,33 +42,19 @@ function initUIEvents() {
             });
         });
     }
-    
-    if (allyBtn) {
-        allyBtn.addEventListener('click', () => {
-            const targetFactionSelect = document.getElementById('target-faction');
-            const selectedOptions = Array.from(targetFactionSelect.selectedOptions);
-            const selectedValues = selectedOptions.map(option => option.value).filter(value => value !== '');
-            
-            if (selectedValues.length > 0) {
-                // 将所有目标势力拼接在一起作为一次结盟
-                sendDiplomacyCommand('request_ally', selectedValues.join('|'));
-            }
-        });
-    }
-    
-    if (warBtn) {
-        warBtn.addEventListener('click', () => {
-            const targetFactionSelect = document.getElementById('target-faction');
-            const selectedOptions = Array.from(targetFactionSelect.selectedOptions);
-            const selectedValues = selectedOptions.map(option => option.value).filter(value => value !== '');
-            
-            if (selectedValues.length > 0) {
-                selectedValues.forEach(value => {
-                    sendDiplomacyCommand('declare_war', value);
-                });
-            }
-        });
-    }
+
+    allyBtn.addEventListener('click', () => {
+        const targetFactionId = document.getElementById('kingdom-info-content').kingdomId;
+        if (targetFactionId) {
+            sendCommand('request_ally', targetFactionId);
+        }
+    });
+    warBtn.addEventListener('click', () => {
+        const targetFactionId = document.getElementById('kingdom-info-content').kingdomId;
+        if (targetFactionId) {
+            sendCommand('declare_war', targetFactionId);
+        }
+    });
     
     if (submitTaxBtn) {
         submitTaxBtn.addEventListener('click', () => {
@@ -589,6 +575,7 @@ function updateKingdomDetails(details) {
     
     if (details.alive)
     {
+        contentContainer.kingdomId = details.id;
         let detailsHtml = `<h4>${details.name}(${details.id})</h4>`;
         detailsHtml += `<p>首都: ${details.capital}</p>`;
     
