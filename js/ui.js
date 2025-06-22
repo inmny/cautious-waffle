@@ -319,9 +319,6 @@ function updateFactionList(factions) {
     });
 }
 
-// 添加全局变量存储战争列表
-let warListData = [];
-
 // 修改导出函数
 window.uiModule = {
     addGlobalMessage: addGlobalMessage,
@@ -334,8 +331,6 @@ window.uiModule = {
     initUIEvents: initUIEvents,
     updateWarList: updateWarList,
     updateWarDetails: updateWarDetails,
-    // 添加获取战争列表数据的方法
-    getWarListData: () => warListData
 };
 
 // 以下添加新的UI函数
