@@ -319,7 +319,10 @@ function updateFactionList(factions) {
     });
 }
 
-// 导出函数
+// 添加全局变量存储战争列表
+let warListData = [];
+
+// 修改导出函数
 window.uiModule = {
     addGlobalMessage: addGlobalMessage,
     addOptionMessage: addOptionMessage,
@@ -328,5 +331,196 @@ window.uiModule = {
     updateCityInfo: updateCityInfo,
     updateRulerInfo: updateRulerInfo,
     updateDiplomacyInfo: updateDiplomacyInfo,
-    initUIEvents: initUIEvents
+    initUIEvents: initUIEvents,
+    updateWarList: updateWarList,
+    updateWarDetails: updateWarDetails,
+    // 添加获取战争列表数据的方法
+    getWarListData: () => warListData
 };
+
+// 以下添加新的UI函数
+function updateWarList(wars) {
+    // 更新全局变量
+    warListData = wars;
+    
+    let warListContent = document.querySelector('.war-list-content');
+    const warCountElement = document.getElementById('war-count');
+    const totalWarCountElement = document.getElementById('total-war-count');
+    
+    if (!warListContent) {
+        console.error('未找到战争列表内容容器');
+        return;
+    }
+    
+    // 清空现有列表
+    warListContent.innerHTML = '';
+    
+    if (wars.length === 0) {
+        warListContent.innerHTML = '<p>当前没有进行中的战争</p>';
+        if (warCountElement) warCountElement.textContent = '0';
+        if (totalWarCountElement) totalWarCountElement.textContent = '0';
+        return;
+    }
+    
+    // 更新统计信息
+    if (warCountElement) warCountElement.textContent = wars.length;
+    if (totalWarCountElement) totalWarCountElement.textContent = wars.length;
+    
+    // 创建战争列表项
+    wars.forEach(war => {
+        const warItem = document.createElement('div');
+        warItem.className = 'war-item';
+        warItem.innerHTML = `
+            <span>${war.name}(${war.id})</span>
+        `;
+        
+        // 添加点击事件
+        warItem.addEventListener('click', () => {
+            showWarDetails(war);
+            
+            // 高亮选中的战争条目
+            document.querySelectorAll('.war-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            warItem.classList.add('selected');
+        });
+        
+        warListContent.appendChild(warItem);
+    });
+    
+    // 初始化滚动条
+    setupWarScrollbar();
+}
+
+// 初始化战争列表滚动条
+function setupWarScrollbar() {
+    const warListContent = document.querySelector('.war-list-content');
+    const scrollThumb = document.querySelector('.scroll-thumb');
+    
+    if (!warListContent || !scrollThumb) return;
+    
+    // 计算滚动条比例
+    const listHeight = warListContent.clientHeight;
+    const contentHeight = warListContent.scrollHeight;
+    
+    if (contentHeight <= listHeight) {
+        // 内容高度小于容器高度，不需要滚动条
+        scrollThumb.style.display = 'none';
+        return;
+    } else {
+        scrollThumb.style.display = 'block';
+    }
+    
+    const thumbHeight = Math.max(20, (listHeight / contentHeight) * listHeight);
+    scrollThumb.style.height = `${thumbHeight}px`;
+    
+    // 计算滚动比例
+    const scrollRatio = (contentHeight - listHeight) / (listHeight - thumbHeight);
+    
+    // 滚动条拖拽功能
+    let isDragging = false;
+    
+    scrollThumb.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        const offsetY = e.clientY - scrollThumb.offsetTop;
+        
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onStopDrag);
+        
+        function onMouseMove(e) {
+            if (!isDragging) return;
+            
+            const newTop = Math.max(0, Math.min(e.clientY - offsetY, listHeight - thumbHeight));
+            scrollThumb.style.top = `${newTop}px`;
+            
+            // 滚动列表
+            warListContent.scrollTop = (newTop / (listHeight - thumbHeight)) * (contentHeight - listHeight);
+        }
+        
+        function onStopDrag() {
+            isDragging = false;
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onStopDrag);
+        }
+    });
+    
+    // 监听列表滚动事件
+    warListContent.addEventListener('scroll', () => {
+        if (isDragging) return;
+        
+        const scrollTop = warListContent.scrollTop;
+        const newTop = (scrollTop / (contentHeight - listHeight)) * (listHeight - thumbHeight);
+        scrollThumb.style.top = `${newTop}px`;
+    });
+}
+
+function showWarDetails(war) {
+    const contentContainer = document.getElementById('war-info-content');
+    if (!contentContainer) {
+        console.error('未找到战争信息内容容器');
+        return;
+    }
+    
+    // 设置当前战争ID
+    contentContainer.warId = war.id;
+    
+    // 显示加载状态
+    contentContainer.innerHTML = `<h4>${war.name}(${war.id})</h4><p>加载中...</p>`;
+    
+    // 向服务器请求详细信息
+    commandsModule.sendCommand('fetch_war_details', war.id);
+}
+
+function updateWarDetails(details) {
+    const contentContainer = document.getElementById('war-info-content');
+    
+    // 保存当前滚动位置
+    const scrollTop = contentContainer.scrollTop;
+    
+    if (details.alive)
+    {
+        // 构建完整的战争详情内容
+        let detailsHtml = `<h4>${details.name}(${details.id})</h4>`;
+        
+        // 添加参战方信息
+        detailsHtml += `<p>开战攻方: ${details.attackers.join(', ')}</p>`;
+        detailsHtml += `<p>开战守方: ${details.defenders.join(', ')}</p>`;
+        detailsHtml += `<p>开始年份: ${details.start_year}</p>`;
+        
+        // 添加停战提议按钮
+        detailsHtml += `<button id="proposePeaceBtn" class="action-button">提议停战</button>`;
+
+        contentContainer.innerHTML = detailsHtml;
+        const proposePeaceBtn = document.getElementById('proposePeaceBtn');
+        if (proposePeaceBtn) {
+            // 为停战按钮添加悬停效果样式
+            proposePeaceBtn.classList.add('hover-effect');
+            
+            // 初始化按钮状态
+            if (!proposePeaceBtn.dataset.initialized) {
+                // 为停战按钮添加禁用状态样式
+                proposePeaceBtn.classList.add('disabled-state');
+                
+                // 添加单击事件监听器
+                proposePeaceBtn.addEventListener('click', () => {
+                    if (contentContainer.warId) {
+                        commandsModule.sendCommand('request_stop_war', contentContainer.warId);
+                        // 禁用按钮防止重复点击
+                        proposePeaceBtn.disabled = true;
+                        // 移除之前的禁用状态样式并添加新的点击反馈样式
+                        proposePeaceBtn.classList.remove('disabled-state');
+                        proposePeaceBtn.classList.add('clicked-state');
+                    }
+                });
+                
+                // 标记按钮已初始化
+                proposePeaceBtn.dataset.initialized = 'true';
+            }
+        }
+    }
+    else
+    {
+        contentContainer.innerHTML = contentContainer.innerHTML + '<p>已停战</p>'
+    }
+    contentContainer.scrollTop = scrollTop;
+}

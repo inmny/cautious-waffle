@@ -83,6 +83,32 @@
                             <button id="ally-btn">请求结盟</button>
                             <button id="war-btn">宣战</button>
                         </div>
+                        <!-- 战争信息容器 -->
+                        <div id="war-container" class="panel">
+                            <h3>进行中的战争</h3>
+                            
+                            <div class="war-stats">
+                                显示 <span id="war-count">0</span> 个战争（共 <span id="total-war-count">0</span> 个）
+                            </div>
+                            
+                            <div class="war-split-container">
+                                <!-- 战争列表 -->
+                                <div id="war-list" class="war-list">
+                                    <div class="war-list-content"></div>
+                                    <div class="war-scrollbar">
+                                        <div class="scroll-thumb"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 战争详情和停战按钮容器 -->
+                                <div class="war-details-container">
+                                    <!-- 战争详情 -->
+                                    <div id="war-info-content">
+                                        <p>选择一个战争显示详情</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="internal-policy">

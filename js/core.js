@@ -28,12 +28,7 @@ function connectToServer() {
         };
         
         ws.onmessage = (event) => {
-            try {
-                const data = JSON.parse(event.data);
-                handleMessage(data);
-            } catch (error) {
-                console.error('解析消息失败:', error);
-            }
+            handleMessage(event.data);
         };
         
         ws.onclose = (event) => {
@@ -65,45 +60,45 @@ function updateConnectionStatus(isConnected) {
     }
 }
 
-// 处理服务器消息
-function handleMessage(data) {
-    switch(data.type) {
-        case 'map_update':
-            if (window.mapModule && typeof window.mapModule.updateMap === 'function') {
+// 处理接收到的消息
+function handleMessage(message) {
+    try {
+        const data = JSON.parse(message);
+        
+        // 处理不同类型的消息
+        switch(data.type) {
+            case 'map_update':
                 window.mapModule.updateMap(data.mapData);
-            }
-            break;
-        case 'faction_info':
-            if (window.uiModule && typeof window.uiModule.updateFactionInfo === 'function') {
+                break;
+            case 'faction_info':
                 window.uiModule.updateFactionInfo(data.faction);
-            }
-            break;
-        case 'ruler_info':
-            if (window.uiModule && typeof window.uiModule.updateRulerInfo === 'function') {
+                break;
+            case 'ruler_info':
                 window.uiModule.updateRulerInfo(data.ruler);
-            }
-            break;
-        case 'diplomacy_info':
-            if (window.uiModule && typeof window.uiModule.updateDiplomacyInfo === 'function') {
+                break;
+            case 'diplomacy_info':
                 window.uiModule.updateDiplomacyInfo(data.diplomacy);
-            }
-            break;
-        case 'faction_list':
-            if (window.uiModule && typeof window.uiModule.updateFactionList === 'function') {
+                break;
+            case 'faction_list':
                 window.uiModule.updateFactionList(data.factions);
-            }
-            break;
-        case 'message':
-            if (window.uiModule && typeof window.uiModule.addGlobalMessage === 'function') {
+                break;
+            case 'message':
                 window.uiModule.addGlobalMessage(data.message, data.msg_type);
-            }
-            break;
-        case 'option_message':
-            if (window.uiModule && typeof window.uiModule.addOptionMessage === 'function') {
+                break;
+            case 'option_message':
                 window.uiModule.addOptionMessage(data.message, data.options);
-            }
-        default:
-            console.log('未知消息类型:', data.type);
+                break;
+            case 'war_list':
+                window.uiModule.updateWarList(data.wars);
+                break;
+            case 'war_details':
+                window.uiModule.updateWarDetails(data.war);
+                break;
+            default:
+                console.log('未知消息类型:', data.type);
+        }
+    } catch (e) {
+        console.error('解析消息失败:', e);
     }
 }
 

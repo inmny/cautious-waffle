@@ -17,6 +17,16 @@ function sendDiplomacyCommand(commandType, targetFactionId) {
         console.error('核心模块未加载，无法发送消息');
     }
 }
+function sendCommand(command, arg) {
+    const final_cmd = command + '|' + arg;
+    
+    // 使用核心模块发送消息
+    if (window.coreModule && typeof window.coreModule.sendMessage === 'function') {
+        window.coreModule.sendMessage(final_cmd);
+    } else {
+        console.error('核心模块未加载，无法发送消息');
+    }
+}
 
 // 发送内政指令
 function sendInternalCommand(commandType, value) {
@@ -47,5 +57,6 @@ function sendInternalCommand(commandType, value) {
 // 导出函数
 window.commandsModule = {
     sendDiplomacyCommand: sendDiplomacyCommand,
-    sendInternalCommand: sendInternalCommand
+    sendInternalCommand: sendInternalCommand,
+    sendCommand: sendCommand,
 };
