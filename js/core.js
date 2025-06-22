@@ -81,6 +81,7 @@ function handleMessage(message) {
                 break;
             case 'faction_list':
                 window.uiModule.updateFactionList(data.factions);
+                window.uiModule.updateKingdomList(data.factions);
                 break;
             case 'message':
                 window.uiModule.addGlobalMessage(data.message, data.msg_type);
@@ -93,6 +94,9 @@ function handleMessage(message) {
                 break;
             case 'war_details':
                 window.uiModule.updateWarDetails(data.war);
+                break;
+            case 'kingdom_details':
+                window.uiModule.updateKingdomDetails(data.kingdom);
                 break;
             default:
                 console.log('未知消息类型:', data.type);

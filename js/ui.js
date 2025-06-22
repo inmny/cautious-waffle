@@ -331,13 +331,12 @@ window.uiModule = {
     initUIEvents: initUIEvents,
     updateWarList: updateWarList,
     updateWarDetails: updateWarDetails,
+    updateKingdomList: updateKingdomList,
+    updateKingdomDetails: updateKingdomDetails,
 };
 
 // 以下添加新的UI函数
 function updateWarList(wars) {
-    // 更新全局变量
-    warListData = wars;
-    
     let warListContent = document.querySelector('.war-list-content');
     const warCountElement = document.getElementById('war-count');
     const totalWarCountElement = document.getElementById('total-war-count');
@@ -384,71 +383,8 @@ function updateWarList(wars) {
     });
     
     // 初始化滚动条
-    setupWarScrollbar();
+    setupScrollbar('.war-list-content');
 }
-
-// 初始化战争列表滚动条
-function setupWarScrollbar() {
-    const warListContent = document.querySelector('.war-list-content');
-    const scrollThumb = document.querySelector('.scroll-thumb');
-    
-    if (!warListContent || !scrollThumb) return;
-    
-    // 计算滚动条比例
-    const listHeight = warListContent.clientHeight;
-    const contentHeight = warListContent.scrollHeight;
-    
-    if (contentHeight <= listHeight) {
-        // 内容高度小于容器高度，不需要滚动条
-        scrollThumb.style.display = 'none';
-        return;
-    } else {
-        scrollThumb.style.display = 'block';
-    }
-    
-    const thumbHeight = Math.max(20, (listHeight / contentHeight) * listHeight);
-    scrollThumb.style.height = `${thumbHeight}px`;
-    
-    // 计算滚动比例
-    const scrollRatio = (contentHeight - listHeight) / (listHeight - thumbHeight);
-    
-    // 滚动条拖拽功能
-    let isDragging = false;
-    
-    scrollThumb.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        const offsetY = e.clientY - scrollThumb.offsetTop;
-        
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onStopDrag);
-        
-        function onMouseMove(e) {
-            if (!isDragging) return;
-            
-            const newTop = Math.max(0, Math.min(e.clientY - offsetY, listHeight - thumbHeight));
-            scrollThumb.style.top = `${newTop}px`;
-            
-            // 滚动列表
-            warListContent.scrollTop = (newTop / (listHeight - thumbHeight)) * (contentHeight - listHeight);
-        }
-        
-        function onStopDrag() {
-            isDragging = false;
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onStopDrag);
-        }
-    });
-    
-    // 监听列表滚动事件
-    warListContent.addEventListener('scroll', () => {
-        if (isDragging) return;
-        
-        const scrollTop = warListContent.scrollTop;
-        const newTop = (scrollTop / (contentHeight - listHeight)) * (listHeight - thumbHeight);
-        scrollThumb.style.top = `${newTop}px`;
-    });
-}
-
 function showWarDetails(war) {
     const contentContainer = document.getElementById('war-info-content');
     if (!contentContainer) {
@@ -465,7 +401,6 @@ function showWarDetails(war) {
     // 向服务器请求详细信息
     commandsModule.sendCommand('fetch_war_details', war.id);
 }
-
 function updateWarDetails(details) {
     const contentContainer = document.getElementById('war-info-content');
     
@@ -516,6 +451,175 @@ function updateWarDetails(details) {
     else
     {
         contentContainer.innerHTML = contentContainer.innerHTML + '<p>已停战</p>'
+    }
+    contentContainer.scrollTop = scrollTop;
+}
+// 以下添加新的UI函数
+function updateKingdomList(kingdoms) {
+    let kingdomListContent = document.querySelector('.kingdom-list-content');
+    const kingdomCountElement = document.getElementById('kingdom-count');
+    const totalKingdomCountElement = document.getElementById('total-kingdom-count');
+    
+    if (!kingdomListContent) {
+        console.error('未找到国家列表内容容器');
+        return;
+    }
+    
+    // 清空现有列表
+    kingdomListContent.innerHTML = '';
+    
+    if (kingdoms.length === 0) {
+        kingdomListContent.innerHTML = '<p>当前没有其他国家</p>';
+        if (kingdomCountElement) kingdomCountElement.textContent = '0';
+        if (totalKingdomCountElement) totalKingdomCountElement.textContent = '0';
+        return;
+    }
+    
+    // 更新统计信息
+    if (kingdomCountElement) kingdomCountElement.textContent = kingdoms.length;
+    if (totalKingdomCountElement) totalKingdomCountElement.textContent = kingdoms.length;
+    
+    // 创建战争列表项
+    kingdoms.forEach(kingdom => {
+        const kingdomItem = document.createElement('div');
+        kingdomItem.className = 'kingdom-item';
+        kingdomItem.innerHTML = `
+            <span>${kingdom.name}(${kingdom.id})</span>
+        `;
+        
+        // 添加点击事件
+        kingdomItem.addEventListener('click', () => {
+            showKingdomDetails(kingdom);
+            
+            // 高亮选中的战争条目
+            document.querySelectorAll('.kingdom-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            kingdomItem.classList.add('selected');
+        });
+        
+        kingdomListContent.appendChild(kingdomItem);
+    });
+    
+    // 初始化滚动条
+    setupScrollbar('.kingdom-list-content');
+}
+// 初始化战争列表滚动条
+function setupScrollbar(list_content_name) {
+    const listContent = document.querySelector(list_content_name);
+    const scrollThumb = document.querySelector('.scroll-thumb');
+    
+    if (!listContent || !scrollThumb) return;
+    
+    // 计算滚动条比例
+    const listHeight = listContent.clientHeight;
+    const contentHeight = listContent.scrollHeight;
+    
+    if (contentHeight <= listHeight) {
+        // 内容高度小于容器高度，不需要滚动条
+        scrollThumb.style.display = 'none';
+        return;
+    } else {
+        scrollThumb.style.display = 'block';
+    }
+    
+    const thumbHeight = Math.max(20, (listHeight / contentHeight) * listHeight);
+    scrollThumb.style.height = `${thumbHeight}px`;
+    
+    // 计算滚动比例
+    const scrollRatio = (contentHeight - listHeight) / (listHeight - thumbHeight);
+    
+    // 滚动条拖拽功能
+    let isDragging = false;
+    
+    scrollThumb.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        const offsetY = e.clientY - scrollThumb.offsetTop;
+        
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onStopDrag);
+        
+        function onMouseMove(e) {
+            if (!isDragging) return;
+            
+            const newTop = Math.max(0, Math.min(e.clientY - offsetY, listHeight - thumbHeight));
+            scrollThumb.style.top = `${newTop}px`;
+            
+            // 滚动列表
+            listContent.scrollTop = (newTop / (listHeight - thumbHeight)) * (contentHeight - listHeight);
+        }
+        
+        function onStopDrag() {
+            isDragging = false;
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onStopDrag);
+        }
+    });
+    
+    // 监听列表滚动事件
+    listContent.addEventListener('scroll', () => {
+        if (isDragging) return;
+        
+        const scrollTop = listContent.scrollTop;
+        const newTop = (scrollTop / (contentHeight - listHeight)) * (listHeight - thumbHeight);
+        scrollThumb.style.top = `${newTop}px`;
+    });
+}
+function showKingdomDetails(kingdom) {
+    const contentContainer = document.getElementById('kingdom-info-content');
+    if (!contentContainer) {
+        console.error('未找到国家信息内容容器');
+        return;
+    }
+    
+    // 设置当前战争ID
+    contentContainer.kingdomId = kingdom.id;
+    
+    // 显示加载状态
+    contentContainer.innerHTML = `<h4>${kingdom.name}(${kingdom.id})</h4><p>加载中...</p>`;
+    
+    // 向服务器请求详细信息
+    commandsModule.sendCommand('fetch_kingdom_details', kingdom.id);
+}
+function updateKingdomDetails(details) {
+    const contentContainer = document.getElementById('kingdom-info-content');
+    
+    // 保存当前滚动位置
+    const scrollTop = contentContainer.scrollTop;
+    
+    if (details.alive)
+    {
+        let detailsHtml = `<h4>${details.name}(${details.id})</h4>`;
+        detailsHtml += `<p>首都: ${details.capital}</p>`;
+    
+        const cities = details.cities;
+        let population = 0;
+        cities.forEach(city => {
+            population += city.population;
+        });
+        detailsHtml += `<p>总人口: ${population}</p>`;
+        let zones = 0;
+        cities.forEach(city => {
+            zones += city.zones;
+        });
+        detailsHtml += `<p>总领土: ${zones}</p>`;
+    
+        detailsHtml += `<p>声望: ${details.renown}</p>`;
+        detailsHtml += `<p>影响力: ${details.type}</p>`;
+        detailsHtml += `<p>城市数量: ${cities.length}</p>`;
+        for (let i=0; i<cities.length; i++){
+            // 缩进加入各城市信息
+            detailsHtml += `<p style="margin-left: 20px;">城市 ${i+1}: ${cities[i].name}</p>`;
+            detailsHtml += `<p style="margin-left: 40px;">人口: ${cities[i].population}</p>`;
+            detailsHtml += `<p style="margin-left: 40px;">领土: ${cities[i].zones}</p>`;
+        }
+
+        contentContainer.innerHTML = detailsHtml;
+        // 加入请求结盟、宣战按钮
+    }
+    else
+    {
+        contentContainer.innerHTML = contentContainer.innerHTML + '<p>已灭亡</p>'
     }
     contentContainer.scrollTop = scrollTop;
 }
