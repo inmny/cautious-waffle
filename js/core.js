@@ -98,6 +98,12 @@ function handleMessage(message) {
             case 'kingdom_details':
                 window.uiModule.updateKingdomDetails(data.kingdom);
                 break;
+            case 'city_list':
+                window.uiModule.updateCityList(data.cities);
+                break;
+            case 'city_details':
+                window.uiModule.updateCityDetails(data.city);
+                break;
             default:
                 console.log('未知消息类型:', data.type);
         }

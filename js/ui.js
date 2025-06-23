@@ -126,29 +126,6 @@ function updateFactionInfo(faction) {
     factionInfo.innerHTML = infoHtml;
 }
 
-// 更新城市信息显示
-function updateCityInfo(city) {
-    const cityInfo = document.getElementById('city-info');
-    if (!cityInfo) return;
-    
-    if (!city) {
-        cityInfo.innerHTML = '<p>请选择一个城市查看详情</p>';
-        return;
-    }
-    
-    // 构建城市信息HTML
-    let infoHtml = `<h3>${city.name}</h3>`;
-    infoHtml += `<p>位置: (${city.x}, ${city.y})</p>`;
-    infoHtml += `<p>人口: ${city.population.toLocaleString()}</p>`;
-    infoHtml += `<p>财富: $${city.wealth.toLocaleString()}</p>`;
-    infoHtml += `<p>防御等级: ${city.defenseLevel}</p>`;
-    infoHtml += `<p>建筑数量: ${city.buildingCount}</p>`;
-    infoHtml += `<p>特殊属性: ${city.specialTraits.join(', ') || '无'}</p>`;
-    infoHtml += `<p>安全状况: ${city.safety > 0.7 ? '高' : city.safety > 0.4 ? '中' : '低'}</p>`;
-    
-    cityInfo.innerHTML = infoHtml;
-}
-
 // 更新国王信息显示
 function updateRulerInfo(ruler) {
     const rulerInfo = document.getElementById('ruler-info');
@@ -311,7 +288,6 @@ window.uiModule = {
     addOptionMessage: addOptionMessage,
     updateFactionInfo: updateFactionInfo,
     updateFactionList: updateFactionList,
-    updateCityInfo: updateCityInfo,
     updateRulerInfo: updateRulerInfo,
     updateDiplomacyInfo: updateDiplomacyInfo,
     initUIEvents: initUIEvents,
@@ -319,6 +295,8 @@ window.uiModule = {
     updateWarDetails: updateWarDetails,
     updateKingdomList: updateKingdomList,
     updateKingdomDetails: updateKingdomDetails,
+    updateCityList: updateCityList,
+    updateCityDetails: updateCityDetails,
 };
 
 // 以下添加新的UI函数
@@ -607,6 +585,95 @@ function updateKingdomDetails(details) {
     else
     {
         contentContainer.innerHTML = contentContainer.innerHTML + '<p>已灭亡</p>'
+    }
+    contentContainer.scrollTop = scrollTop;
+}
+// 以下添加新的UI函数
+function updateCityList(cities) {
+    let cityListContent = document.querySelector('.city-list-content');
+    const cityCountElement = document.getElementById('city-count');
+    const totalCityCountElement = document.getElementById('total-city-count');
+    
+    if (!cityListContent) {
+        console.error('未找到城市列表内容容器');
+        return;
+    }
+    
+    // 清空现有列表
+    cityListContent.innerHTML = '';
+    
+    if (cities.length === 0) {
+        cityListContent.innerHTML = '<p>当前没有其他城市</p>';
+        if (cityCountElement) cityCountElement.textContent = '0';
+        if (totalCityCountElement) totalCityCountElement.textContent = '0';
+        return;
+    }
+    
+    // 更新统计信息
+    if (cityCountElement) cityCountElement.textContent = cities.length;
+    if (totalCityCountElement) totalCityCountElement.textContent = cities.length;
+    
+    // 创建战争列表项
+    cities.forEach(city => {
+        const cityItem = document.createElement('div');
+        cityItem.className = 'city-item';
+        cityItem.innerHTML = `
+            <span>${city.name}(${city.id})</span>
+        `;
+        
+        // 添加点击事件
+        cityItem.addEventListener('click', () => {
+            showCityDetails(city);
+            
+            // 高亮选中的战争条目
+            document.querySelectorAll('.city-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            cityItem.classList.add('selected');
+        });
+        
+        cityListContent.appendChild(cityItem);
+    });
+    
+    // 初始化滚动条
+    setupScrollbar('.city-list-content');
+}
+
+function showCityDetails(city) {
+    const contentContainer = document.getElementById('city-info-content');
+    if (!contentContainer) {
+        console.error('未找到城市信息内容容器');
+        return;
+    }
+    
+    // 设置当前战争ID
+    contentContainer.cityId = city.id;
+    
+    // 显示加载状态
+    contentContainer.innerHTML = `<h4>${city.name}(${city.id})</h4><p>加载中...</p>`;
+    
+    // 向服务器请求详细信息
+    commandsModule.sendCommand('fetch_city_details', city.id);
+}
+function updateCityDetails(details) {
+    const contentContainer = document.getElementById('city-info-content');
+    
+    // 保存当前滚动位置
+    const scrollTop = contentContainer.scrollTop;
+    
+    if (details.alive)
+    {
+        contentContainer.kingdomId = details.id;
+        let detailsHtml = `<h4>${details.name}(${details.id})</h4>`;
+        detailsHtml += `<p>人口: ${details.population}</p>`;
+        detailsHtml += `<p>领土: ${details.zones}</p>`;
+        detailsHtml += `<p>军队: ${details.army}/${details.max_army}</p>`
+
+        contentContainer.innerHTML = detailsHtml;
+    }
+    else
+    {
+        contentContainer.innerHTML = contentContainer.innerHTML + '<p>已被摧毁</p>'
     }
     contentContainer.scrollTop = scrollTop;
 }
